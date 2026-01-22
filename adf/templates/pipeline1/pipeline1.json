@@ -1,0 +1,215 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name"
+		},
+		"AzureDatabricks1": {
+			"type": "string"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "silver",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Workspace/Users/ashutoshsoni335@gmail.com/azureProject/silver"
+						},
+						"linkedServiceName": {
+							"referenceName": "[parameters('AzureDatabricks1')]",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "GoldDimCustomers",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "silver",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Workspace/Users/ashutoshsoni335@gmail.com/azureProject/goldDimCustomer",
+							"baseParameters": {
+								"incremental flag": "1"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "[parameters('AzureDatabricks1')]",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "GoldDimProduct",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "silver",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Workspace/Users/ashutoshsoni335@gmail.com/azureProject/GoldDimProfuct",
+							"baseParameters": {
+								"incremental flag": "1"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "[parameters('AzureDatabricks1')]",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "GoldDimDate",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "silver",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Workspace/Users/ashutoshsoni335@gmail.com/azureProject/GoldDimDate",
+							"baseParameters": {
+								"incremental flag": "1"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "[parameters('AzureDatabricks1')]",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "GoldDimSalesRegion",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "silver",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Workspace/Users/ashutoshsoni335@gmail.com/azureProject/DimSalesRegion",
+							"baseParameters": {
+								"incremental flag": "1"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "[parameters('AzureDatabricks1')]",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "FactSales",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "GoldDimCustomers",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "GoldDimProduct",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "GoldDimDate",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "GoldDimSalesRegion",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Workspace/Users/ashutoshsoni335@gmail.com/FactSales"
+						},
+						"linkedServiceName": {
+							"referenceName": "[parameters('AzureDatabricks1')]",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2026-01-21T16:06:35Z"
+			},
+			"dependsOn": []
+		}
+	]
+}
