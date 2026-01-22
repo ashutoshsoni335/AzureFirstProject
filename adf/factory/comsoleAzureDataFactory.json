@@ -1,0 +1,9 @@
+{
+	"name": "comsoleAzureDataFactory",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "fbcf343e-8e22-4d52-9238-c397578b8d8f",
+		"tenantId": "321661b6-4956-4785-8e04-17113c54525f"
+	}
+}
